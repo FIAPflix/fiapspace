@@ -1,10 +1,11 @@
 const express = require('express');
-const dotenv = require("dotenv")
-
+const bodyParser = require('body-parser');
+const dotenv = require('dotenv')
 var path = require('path');
 var app = module.exports = express();
 
 const homeRoutes = require('./routes/home');
+app.use(bodyParser.urlencoded({ extended: true }));
 
 dotenv.config()
 
