@@ -17,16 +17,16 @@
           <div class="collapse navbar-collapse flex-grow-0" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-                <a class="nav-link text-light" aria-current="page" href="page1.html">Login</a>
+                <a class="nav-link text-light" aria-current="page" href="/">Login</a>
             </li> 
               <li class="nav-item">
-                <a class="nav-link text-light" aria-current="page" href="page1.html">Home</a>
+                <a class="nav-link text-light" aria-current="page" href="/">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link text-light" href="page1.html">Espaços</a>
+                <a class="nav-link text-light" href="/#espacos">Espaços</a>
               </li>
               <li class = 'nav-item'> 
-                <a class="nav-link text-light" href="page1.html">Benefícios</a>
+                <a class="nav-link text-light" href="/#beneficios">Benefícios</a>
             </li>
             <li class = 'nav-item'>
                 <a class = 'nav-link text-light' href="#contato">Contate-nos</a>
@@ -39,23 +39,32 @@
   <section>
         <h2 class="text-center" id="reserva">Faça sua Reserva</h2>
         <div>
-            <form action="" method="get">
-              <label for="bairro">Selecione o local:</label>
+            <form action="enviar-reserva" method="post">
+              <label for="email">E-mail:</label>
+              <input type="email" name="email" id="email">
+
+              <!-- <label for="bairro">Selecione o local:</label>
               <select name="bairro" id="bairro">
-                <option value="bairro1">Vila Mariana</option>
-                <option value="bairro2">Centro</option>
-                <option value="bairro3">Tatuapé</option>
-              </select>
+                <option value="1">Vila Mariana</option>
+                <option value="2">Centro</option>
+                <option value="3">Tatuapé</option>
+              </select> -->
 
               <label for="espaco">Selecione o tipo de Espaço:</label>
               <select name="espaco" id="espaco">
-                <option value="espaco1">Salão de Festas</option>
-                <option value="espaco2">Sala de Reuniões</option>
-                <option value="espaco3">Quadra poliesportiva</option>
+                <option value="1">Salão de Festas</option>
+                <option value="2">Sala de Reuniões</option>
+                <option value="3">Quadra poliesportiva</option>
               </select>
 
               <label for="calendario">Disponibilidade:</label>
-              <input type="datetime-local" name="" id="">
+              <input type="datetime-local" name="data" id="data">
+
+              <label for="duracao">Duração (horas):</label>
+              <input type="number" name="duracao" id="duracao" max="8" min="1">
+
+              <label for="pessoas">Pessoas:</label>
+              <input type="number" name="pessoas" id="pessoas">
 
               <input type="submit" value="Enviar">
             </form>
