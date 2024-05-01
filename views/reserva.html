@@ -39,12 +39,12 @@
   </header>
 
 <!--FORMULÁRIOS-->    
-  <section>
+  <section class="mt-4">
         <h2 class="text-center" id="reserva">Faça sua Reserva</h2>
-        <div>
-            <form action="enviar-reserva" method="post">
+        <div class="text-center m-4">
+            <form  id="formulario-reserva">
               <label for="email">E-mail:</label>
-              <input type="email" name="email" id="email">
+              <input type="email" name="email" id="email" placeholder="mail@mail.com" required>
 
               <!-- <label for="bairro">Selecione o local:</label>
               <select name="bairro" id="bairro">
@@ -54,39 +54,55 @@
               </select> -->
 
               <label for="espaco">Selecione o tipo de Espaço:</label>
-              <select name="espaco" id="espaco">
-                <option value="1">Salão de Festas</option>
-                <option value="2">Sala de Reuniões</option>
-                <option value="3">Quadra poliesportiva</option>
+              <select name="espaco" id="espaco" required>
+                <option value="" disabled selected hidden>selecione espaço</option>
+                <option value="Festas" >Salão de Festas</option>
+                <option value="Reuniao" >Sala de Reuniões</option>
+                <option value="Poliesportiva">Quadra poliesportiva</option>
               </select>
+              
 
               <label for="calendario">Disponibilidade:</label>
-              <input type="datetime-local" name="data" id="data">
+              <input type="datetime-local" name="data" id="data" required></br>
 
               <label for="duracao">Duração (horas):</label>
-              <input type="number" name="duracao" id="duracao" max="8" min="1">
+              <input type="number" name="duracao" id="duracao" max="8" min="1" required>
 
               <label for="pessoas">Pessoas:</label>
-              <input type="number" name="pessoas" id="pessoas">
+              <input type="number" name="pessoas" id="pessoas" min=1 required>
 
-              <input type="submit" value="Enviar">
+              <input type="submit" value="Selecionar" onclick="mostrarResumo()">
               <input type="button" value="Voltar" onclick="voltarParaPaginaInicial()">
             </form>
         </div>
-<!--CARREGAMENTOS-->          
-<section>
-  <div>
-    <ul id="model">
-    </ul>
+<!--CARREGAMENTOS-->
+<section class="p-2 m-2">
+  <div class="row">
+    <div class="col">
+      <img id = "imagemEspaco" src="" alt="Imagem do Espaço"style="display: none;" class="w-100 p-5 m-2">
+    </div>
+    <div class="col" >
+      <ul class="p-4 mt-5"class="resumo-reserva" id="resumo" style="display: none" >
+        <h3>Resumo da Reserva:</h3>
+          <p>Email: <span id="resumo-email"></span></p>
+          <p>Sala: <span id="resumo-sala"></span></p>
+          <p>Data:<span id="resumo-data"></spani></p>
+          <p>Duração: <span id="resumo-duracao"></span></p>
+          <p>Pessoas:<span id="resumo-pessoas"> </span></p>
+          <input type="submit" value="Confirmar Reserva"></input>
+          <input type="button" value="Limpar">
+
+      </ul>
+    </div>
   </div>
-</section>
+</section>          
 <!--CONTATO-->      
   </section>
   <section> 
     <h2 class="text-center mx-auto" id="contato">Contate-nos</h2>
       <div class=" w-50 mx-auto d-lg-flex justify-content-around">
           <div>
-              <ul >
+              <ul class="d-lg-flex">
                   <li class="row align-items-center gap-3">
                       <div class="col-1">
                           <img src="./imagem/email.png" alt="ícone de envelope" >
@@ -124,7 +140,7 @@
       
   </div>
   </section>
- <!-- <div id="warning" >
+ <!-- <div id="warning">
     Your browser doesn't support the element. Please upgrade!
   </div>-->
   <footer class="bg-black d-lg-flex justify-content-around text-center mt-5 p-3">
