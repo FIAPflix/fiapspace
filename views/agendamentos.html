@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabela de reservas</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Reservas</h1>
+    <label for="filterEmail">Filter by Email:</label>
+    <input type="text" id="filterEmail" oninput="filterTable()">
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Número da reserva</th>
+                <th>Data</th>
+                <th>Duração</th>
+                <th>E-mail</th>
+                <th>Espaço</th>
+                <th>Pessoas</th>
+                <th>Status</th>
+                <th>Confirmar agendamento</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+
+    </table>
+
+    <script>
+        function confirmAction(id) {
+            id = id.toString();
+            console.log('Confirmation requested for ID:', id);
+            fetch(`/confirmar-reserva/${id}`, {
+                method: 'POST',
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Tivemos um problema para confirmar seu agendamento. Tente novamente.');
+                    }
+                    console.log('Reserva confirmada com sucesso');
+                    fetchDataAndUpdateTable();
+                })
+                .catch(error => {
+                    console.error('Erro ao confirmar a reserva:', error.message);
+                });
+        }
+
+        function deleteAction(id) {
+            id = id.toString();
+            console.log('Deletion requested for ID:', id);
+            fetch(`/cancelar-reserva/${id}`, {
+                method: 'POST',
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Tivemos um problema para cancelar seu agendamento. Tente novamente.');
+                    }
+                    console.log('Reserva cancelada com sucesso');
+                    fetchDataAndUpdateTable();
+                })
+                .catch(error => {
+                    console.error('Erro ao cancelar a reserva:', error.message);
+                });
+        }
+
+        function fetchDataAndUpdateTable() {
+            fetch('/agendamentos/data')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch data');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Populate the table with the fetched data
+                    populateTable(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error.message);
+                });
+        }
+
+        function populateTable(data) {
+            const tableBody = document.querySelector('#dataTable tbody');
+            tableBody.innerHTML = ''; // Clear existing table rows
+            data.forEach(item => {
+                // Create a table row for each item in the data
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.data}</td>
+                    <td>${item.duracao}</td>
+                    <td>${item.email}</td>
+                    <td>${item.espaco}</td>
+                    <td>${item.pessoas}</td>
+                    <td>${item.status}</td>
+                    <td class="action-buttons">
+                        ${item.status !== 'Confirmado' ? `<button onclick="confirmAction('${item.id}')">Confirmar</button>` : '&nbsp;'}
+                        ${item.status !== 'Confirmado' ? `<button onclick="deleteAction('${item.id}')">Cancelar</button>` : '&nbsp;'}
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function filterTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("filterEmail");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("dataTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1]; // Column index of email
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchDataAndUpdateTable);
+    </script>
+</body>
+
+</html>
