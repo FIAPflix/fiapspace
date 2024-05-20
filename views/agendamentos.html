@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <title>Tabela de reservas</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+<script>
+            function loadFormData() {
+            const reserva = JSON.parse(localStorage.getItem('reserva'));
+            if (reserva) {
+                const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+                const newRow = tableBody.insertRow();
+
+                const cell1 = newRow.insertCell(0);
+                const cell2 = newRow.insertCell(1);
+                const cell3 = newRow.insertCell(2);
+                const cell4 = newRow.insertCell(3);
+                const cell5 = newRow.insertCell(4);
+                const cell6 = newRow.insertCell(5);
+                const cell7 = newRow.insertCell(6);
+                const cell8 = newRow.insertCell(7);
+
+                cell1.innerHTML = '1'; 
+                cell2.innerHTML = reserva.data;
+                cell3.innerHTML = reserva.duracao;
+                cell4.innerHTML = reserva.email;
+                cell5.innerHTML = reserva.sala;
+                cell6.innerHTML = reserva.pessoas;
+                cell7.innerHTML = 'Pendente';
+                cell8.innerHTML = '<button>Confirmar</button>';
+            }
+        }
+
+        window.onload = loadFormData;
+</script>
+
+<body class="bg-dark text-light" >
+    <header class ="bg-black">
+        <nav class="navbar navbar-expand-lg">
+         <div class="container-fluid">
+           <a class="navbar-brand text-light" href="#">FIAP Space</a>
+           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+             <span class="navbar-toggler-icon"></span>
+           </button>  
+           <div class="collapse navbar-collapse flex-grow-0" id="navbarSupportedContent">
+             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <!-- [Implementação Futura: LOGIN - TAG Navbar ]
+                 <li class="nav-item">
+                 <a class="nav-link text-light" aria-current="page" href="#login">Login</a>-->
+             </li> 
+               <li class="nav-item">
+                 <a class="nav-link text-light" aria-current="page" href="#index.html">Home</a>
+               </li>
+               <li class="nav-item">
+                 <a class="nav-link text-light" href="#index.html">Espaços</a>
+               </li>
+               <li class = 'nav-item'> 
+                 <a class="nav-link text-light" href="#index.html">Benefícios</a>
+             </li>
+             <li class = 'nav-item'>
+                 <a class = 'nav-link text-light' href="#contato">Contate-nos</a>
+             </li>
+             <li class = 'nav-item'>
+                 <a class = 'nav-link text-light' href="#reserva.html" onclick="irParaReservas()">Reservas</a>
+             </li>
+             </ul>
+           </div>
+         </div>
+       </nav>
+    </header>
+    <h1 class="text-center">Reservas</h1>
+    <label for="filterEmail">Filter by Email:</label>
+    <input type="text" id="filterEmail" oninput="filterTable()">
+   <!-- <form name="form2" id="form2" action="reserva.html" method="get">-->
+    <table id="dataTable">
+        <thead >
+            <tr>
+                <th>Número da reserva</th>
+                <th>Data</th>
+                <th>Duração</th>
+                <th>E-mail</th>
+                <th>Espaço</th>
+                <th>Pessoas</th>
+                <th>Status</th>
+                <th>Confirmar agendamento</th>
+            </tr>
+        </thead>
+        <tbody action="reserva.html"method="get">
+            
+        </tbody>
+
+    </table>
+ <!--   </form> -->
+    <table id="dataTable" >
+    <script>
+        function confirmAction(id) {
+            id = id.toString();
+            console.log('Confirmation requested for ID:', id);
+            fetch(`/confirmar-reserva/${id}`, {
+                method: 'POST',
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Tivemos um problema para confirmar seu agendamento. Tente novamente.');
+                    }
+                    console.log('Reserva confirmada com sucesso');
+                    fetchDataAndUpdateTable();
+                })
+                .catch(error => {
+                    console.error('Erro ao confirmar a reserva:', error.message);
+                });
+        }
+
+        function deleteAction(id) {
+            id = id.toString();
+            console.log('Deletion requested for ID:', id);
+            fetch(`/cancelar-reserva/${id}`, {
+                method: 'POST',
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Tivemos um problema para cancelar seu agendamento. Tente novamente.');
+                    }
+                    console.log('Reserva cancelada com sucesso');
+                    fetchDataAndUpdateTable();
+                })
+                .catch(error => {
+                    console.error('Erro ao cancelar a reserva:', error.message);
+                });
+        }
+
+        function fetchDataAndUpdateTable() {
+            fetch('/agendamentos/data')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch data');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Populate the table with the fetched data
+                    populateTable(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error.message);
+                });
+        }
+
+        function populateTable(data) {
+            const tableBody = document.querySelector('#dataTable tbody');
+            tableBody.innerHTML = ''; // Clear existing table rows
+            data.forEach(item => {
+                // Create a table row for each item in the data
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.data}</td>
+                    <td>${item.duracao}</td>
+                    <td>${item.email}</td>
+                    <td>${item.espaco}</td>
+                    <td>${item.pessoas}</td>
+                    <td>${item.status}</td>
+                    <td class="action-buttons">
+                        ${item.status !== 'Confirmado' ? `<button onclick="confirmAction('${item.id}')">Confirmar</button>` : '&nbsp;'}
+                        ${item.status !== 'Confirmado' ? `<button onclick="deleteAction('${item.id}')">Cancelar</button>` : '&nbsp;'}
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function filterTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("filterEmail");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("dataTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1]; // Column index of email
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchDataAndUpdateTable);
+    </script>
+<section> 
+    <h2 class="text-center mx-auto" id="contato">Contate-nos</h2>
+    <div class=" w-50 mx-auto d-lg-flex justify-content-around">
+        <div>
+            <ul class="d-lg-flex">
+                <li class="row align-items-center gap-3">
+                    <div class="col-1">
+                        <img src="./imagem/email.png" alt="ícone de envelope" >
+                    </div>
+                    <div class="col">
+                        <p>Contate-nos via e-mail</p>
+                        <p>suporte.techchallenge@gmail.com</p>
+                    </div> 
+                       
+                </li>
+                <li class="row align-items-center gap-3">
+                    <div class="col-1">
+                        <img src="./imagem/tel.png" alt="ícone de telefone" >
+                    </div>
+                    <div class="col">
+                        <p>Contate-nos via telefone</p>
+                        <p>(xx) xxxxx-xxxx</p>
+                    </div>
+                    
+                </li>
+                <li class="row align-items-center gap-3">
+                    <div class="col-1">
+                        <img src="./imagem/pin.png" alt="ícone de pin">
+                    </div>
+                    <div class="col">
+                        <p>Endereço Comercial</p>
+                        <p>Rua Fictícia, 489</p>
+                        <p>São Paulo - SP</p>
+                    </div>
+                    
+                </li>
+            </ul>
+            </div> 
+</section>
+    </div>
+    <footer class="bg-black d-lg-flex justify-content-around text-center mt-5 p-3">
+        <p>
+            2024 @ Desenvolvido por Ariel Fortes e Bruna Baria | Projeto fictício sem fins comerciais para pós graduação FIAP
+        </p>
+        <ul class="d-flex justify-content-center list-unstyled gap-2">
+            
+            <li>
+                <a href="https://github.com/FIAPflix/fiapspace">
+                <i class="fa-brands fa-github fa-2xl" style="color: #ffffff;"></i>
+                </a>
+            </li>
+            <li>
+                <a href="https://br.linkedin.com">
+                <i class="fa-brands fa-linkedin fa-2xl" style="color: #ffffff;"></i>
+                </a>   
+            </li>
+            <li>
+                <a href="https://www.instagram.com/">
+                <i class="fa-brands fa-instagram fa-2xl" style="color: #ffffff;"></i>
+                </a>   
+            </li>
+        </ul>
+    </footer>
+    <script src="app.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/cb055360d0.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+
+</body>
+
+</html>
